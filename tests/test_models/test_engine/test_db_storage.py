@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """test for file storage"""
+import models
 import unittest
 import pep8
 import json
@@ -13,6 +14,7 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
+from models import storage
 from models.engine.db_storage import DBStorage
 
 
@@ -40,6 +42,7 @@ class TestDBStorage(unittest.TestCase):
         self.query.close()
         self.db.close()
 
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
     def testall_Dbstorage(self):
         """ test for Dbstorage and alll method
         no element in tables"""
@@ -73,8 +76,30 @@ class TestDBStorage(unittest.TestCase):
             text = "select * from cities"
             self.query.execute(text)
             count = self.query.fetchall()
-            dict = self.storage.all('City')
+            dict = self.storage.all(City)
             self.assertEqual(len(count), len(dict))
+
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
+    def test_get_db(self):
+        """ Tests method for obtaining an instance db storage"""
+        dic = {"name": "Cundinamarca"}
+        instance = State(**dic)
+        storage.new(instance)
+        storage.save()
+        get_instance = storage.get(State, instance.id)
+        self.assertEqual(get_instance, instance)
+
+    def test_count(self):
+        """ Tests count method db storage """
+        dic = {"name": "Vecindad"}
+        state = State(**dic)
+        storage.new(state)
+        dic = {"name": "Mexico", "state_id": state.id}
+        city = City(**dic)
+        storage.new(city)
+        storage.save()
+        c = storage.count()
+        self.assertEqual(len(storage.all()), c)
 
 
 if __name__ == "__main__":
