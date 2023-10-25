@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ The file storage engine where the file will be stored """
+import models
 import sys
 import os
 import json
@@ -30,13 +31,13 @@ class FileStorage:
                 if isinstance(v, cls):
                     cls_dict[k] = v
             return cls_dict
-        return FileStorage.__objects
+        return self.__objects
 
     def new(self, obj):
         """ sets in object with key classname.id """
         clName = obj.__class__.__name__
         key = f"{clName}.{obj.id}"
-        FileStorage.__objects[key] = obj
+        self.__objects[key] = obj
 
     def save(self):
         """ serializes the object into the json file """
@@ -67,3 +68,29 @@ class FileStorage:
     def close(self):
         """ calls reload()"""
         self.reload()
+
+    def get(self, cls, id):
+        """ get all object based on class and id"""
+        classes = [User, State, City, Amenity, Place, Review]
+        if cls not in classes:
+            return None
+
+        allobjects = models.storage.all(cls)
+        for obj in allobjects.values():
+            if (obj.id == id):
+                return obj
+        return None
+
+    def count(self, cls=None):
+        """
+        count the number of objects in storage
+        """
+        count = 0
+        classes = [User, State, City, Amenity, Place, Review]
+        if cls is None:
+            count = 0
+            for c in classes:
+                count = count + len(models.storage.all(c).values())
+        else:
+            count = len(models.storage.all(cls).values())
+        return count

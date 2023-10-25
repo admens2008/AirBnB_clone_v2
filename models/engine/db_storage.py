@@ -2,6 +2,7 @@
 """ New engine DBStorage
 linked to the MySQL database """
 
+import models
 from os import getenv
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
@@ -88,3 +89,28 @@ class DBStorage:
     def close(self):
         """ cals remove method"""
         self.__session.close()
+
+    def get(self, cls, id):
+        """ get all object based on class and id"""
+        classes = [User, State, City, Amenity, Place, Review]
+        if cls not in classes:
+            return None
+
+        allobjects = models.storage.all(cls)
+        for obj in allobjects.values():
+            if (obj.id == id):
+                return obj
+        return None
+
+    def count(self, cls=None):
+        """
+        count the number of objects in storage
+        """
+        classes = [User, State, City, Amenity, Place, Review]
+        if cls is None:
+            count = 0
+            for c in classes:
+                count = count + len(models.storage.all(c).values())
+        else:
+            count = len(models.storage.all(cls).values())
+        return count

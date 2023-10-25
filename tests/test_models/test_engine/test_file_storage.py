@@ -200,10 +200,12 @@ class TestFileStorage_all(unittest.TestCase):
         except IOError:
             pass
 
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
     def test_all(self):
         """ test all type """
         self.assertEqual(dict, type(models.storage.all()))
 
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
     def test_all(self):
         """ __objects is properly returned """
         new = BaseModel()
@@ -246,6 +248,69 @@ class TestFileStorage_all(unittest.TestCase):
         self.assertIn("City." + city.id, getllobjs)
         self.assertIn("Amenity." + amenity.id, getllobjs)
         self.assertIn("Review." + review.id, getllobjs)
+
+
+class TestFileStorage_all_get_count(unittest.TestCase):
+    """ Test all method for file storage"""
+    @classmethod
+    def setUp(self):
+        """ setup enviroments for the unittest"""
+        try:
+            os.rename("file.json", "pascal")
+        except IOError:
+            pass
+
+    @classmethod
+    def tearDown(self):
+        """ tear down enviroments for the unittest"""
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
+        try:
+            os.rename("pascal", "file.json")
+        except IOError:
+            pass
+
+    def clearStorage(self):
+        """ clear the file contents  """
+        FileStorage._FileStorage__objects = {}
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
+        try:
+            os.rename("pascal", "file.json")
+        except IOError:
+            pass
+
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', "no DB")
+    def test_get(self):
+        """ Tests method for obtaining  file storage"""
+        storage = FileStorage()
+        dic = {"name": "Cundinamarca"}
+        instance = State(**dic)
+        storage.new(instance)
+        storage.save()
+        get_instance = storage.get(State, instance.id)
+        self.assertEqual(get_instance, instance)
+        c = storage.count(State)
+        self.assertEqual(len(storage.all(State)), c)
+
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', "no DB")
+    def test_count(self):
+        """ Tests count method file storage """
+        storage = FileStorage()
+        dic = {"name": "Vecindad"}
+        state = State(**dic)
+        storage.new(state)
+        storage.save()
+        dic = {"name": "Mexico", "state_id": state.id}
+        city = City(**dic)
+        storage.new(city)
+        storage.save()
+        c = storage.count(City)
+        self.assertEqual(len(storage.all(City)), c)
 
 
 class TestFileStorage__file_path(unittest.TestCase):
