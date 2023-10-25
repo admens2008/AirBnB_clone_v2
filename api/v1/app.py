@@ -1,12 +1,21 @@
 #!/usr/bin/python3
 """ . Status of your API """
 import os
-from flask import Flask
+from flask import Flask, jsonify
 from api.v1.views import app_views
 from models import storage
+from werkzeug.exceptions import NotFound
 
 app = Flask(__name__)
 app.register_blueprint(app_views, url_prefix="/api/v1")
+
+
+@app.errorhandler(NotFound)
+def not_found_error(error):
+    """The content should be: "error": "Not found"""
+    response = jsonify({"error": "Not found"})
+    response.status_code = 404
+    return response
 
 
 @app.teardown_appcontext
