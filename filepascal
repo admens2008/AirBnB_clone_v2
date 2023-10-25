@@ -1,0 +1,24 @@
+All States: 0
+New State: [State] (72b1bcc4-8d05-4adc-bcec-002932c98471) {'id': '72b1bcc4-8d05-4adc-bcec-002932c98471', 'created_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889658), 'updated_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889660), 'name': 'California'}
+All States: 1
+[State] (72b1bcc4-8d05-4adc-bcec-002932c98471) {'id': '72b1bcc4-8d05-4adc-bcec-002932c98471', 'created_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889658), 'updated_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889660), 'name': 'California'}
+Another State: [State] (dcb6a98d-53cf-4a5e-82f0-8b94e3f2b240) {'id': 'dcb6a98d-53cf-4a5e-82f0-8b94e3f2b240', 'created_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889956), 'updated_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889958), 'name': 'Nevada'}
+All States: 2
+[State] (72b1bcc4-8d05-4adc-bcec-002932c98471) {'id': '72b1bcc4-8d05-4adc-bcec-002932c98471', 'created_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889658), 'updated_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889660), 'name': 'California'}
+[State] (dcb6a98d-53cf-4a5e-82f0-8b94e3f2b240) {'id': 'dcb6a98d-53cf-4a5e-82f0-8b94e3f2b240', 'created_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889956), 'updated_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889958), 'name': 'Nevada'}
+All States: 1
+[State] (dcb6a98d-53cf-4a5e-82f0-8b94e3f2b240) {'id': 'dcb6a98d-53cf-4a5e-82f0-8b94e3f2b240', 'created_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889956), 'updated_at': datetime.datetime(2023, 9, 18, 8, 35, 34, 889958), 'name': 'Nevada'}
+
+
+
+
+All States: 0
+New State: [State] (b0026fc6-116f-4d1a-a9cb-6bb9b299f1ce) {'name': 'California', 'created_at': datetime.datetime(2017, 11, 10, 1, 13, 32, 561137), 'id': 'b0026fc6-116f-4d1a-a9cb-6bb9b299f1ce'}
+All States: 1
+[State] (b0026fc6-116f-4d1a-a9cb-6bb9b299f1ce) {'name': 'California', 'created_at': datetime.datetime(2017, 11, 10, 1, 13, 32, 561137), 'id': 'b0026fc6-116f-4d1a-a9cb-6bb9b299f1ce'}
+Another State: [State] (37705d25-8903-4318-9303-6d6d336a22c1) {'name': 'Nevada', 'created_at': datetime.datetime(2017, 11, 10, 1, 13, 34, 619133), 'id': '37705d25-8903-4318-9303-6d6d336a22c1'}
+All States: 2
+[State] (b0026fc6-116f-4d1a-a9cb-6bb9b299f1ce) {'name': 'California', 'created_at': datetime.datetime(2017, 11, 10, 1, 13, 32, 561137), 'id': 'b0026fc6-116f-4d1a-a9cb-6bb9b299f1ce'}
+[State] (37705d25-8903-4318-9303-6d6d336a22c1) {'name': 'Nevada', 'created_at': datetime.datetime(2017, 11, 10, 1, 13, 34, 619133), 'id': '37705d25-8903-4318-9303-6d6d336a22c1'}
+All States: 1
+[State] (37705d25-8903-4318-9303-6d6d336a22c1) {'name': 'Nevada', 'created_at': datetime.datetime(2017, 11, 10, 1, 13, 34, 619133), 'id': '37705d25-8903-4318-9303-6d6d336a22c1'}
