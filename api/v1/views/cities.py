@@ -8,6 +8,20 @@ from werkzeug.exceptions import NotFound
 from api.v1.views import app_views
 
 
+@app_views.route('/cities/<string:city_id>', methods=['GET'],
+                 strict_slashes=False)
+def get_city_by_id(city_id):
+    """ Retrieves a city object: GET /api/v1/cityies/<city_id>"""
+    eachcity = storage.get(City, city_id)
+    if eachcity is None:
+        response = jsonify({"error": "Not found"})
+        response.status_code = 404
+        abort(404)
+        return response
+    else:
+        return jsonify(eachcity.to_dict())
+
+
 @app_views.route('/states/<string:state_id>/cities', methods=['GET'],
                  strict_slashes=False)
 def get_cities_by_state_id(state_id):
