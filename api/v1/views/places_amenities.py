@@ -10,6 +10,26 @@ from models.place import Place
 # from flasgger.utils import swag_from
 
 
+@app_views.route('places/<place_id>/amenities', methods=['GET'],
+                 strict_slashes=False)
+def get_place_amenities(place_id):
+    """
+    Retrieves the list of all Amenity objects of a Place
+    """
+    place = storage.get(Place, place_id)
+
+    if not place:
+        abort(404)
+
+    if getenv('HBNB_TYPE_STORAGE') == "db":
+        amenities = [amenity.to_dict() for amenity in place.amenities]
+    else:
+        amenities = [storage.get(Amenity, amenity_id).to_dict()
+                     for amenity_id in place.amenity_ids]
+
+    return jsonify(amenities)
+  
+
 @app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['POST'],
                  strict_slashes=False)
 # @swag_from('documentation/place_amenity/post_place_amenities.yml',
