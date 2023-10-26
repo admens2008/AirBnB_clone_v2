@@ -9,23 +9,22 @@ from werkzeug.exceptions import NotFound
 from api.v1.views import app_views
 
 
-@app_views.route('/states/<string:state_id>/cities', methods=['GET'],
+@app_views.route('/cities/<string:city_id>/places', methods=['GET'],
                  strict_slashes=False)
-def get_cities_by_state_id(state_id):
-    """ Retrieves a cities object: GET /api/v1/states/<state_id>"""
-    state_ = {'state_id': state_id}
-    cities = []
-    onecity = None
-    for s in storage.all(City).values():
-        if s.state_id == state_id:
-            cities.append(s.to_dict())
-            onecity = s.to_dict()
-    if len(cities) <= 0:
+def get_places_by_city_id(city_id):
+    """ Retrieves all places object: GET /cities/<city_id>/places'"""
+    places = []
+    oneplace = None
+    for s in storage.all(Place).values():
+        if s.city_id == city_id:
+            places.append(s.to_dict())
+            oneplace = s.to_dict()
+    if len(places) <= 0:
         abort(404)
     else:
-        if len(cities) == 1:
-            return jsonify(onecity)
-        return jsonify(cities)
+        if len(places) == 1:
+            return jsonify(oneplace)
+        return jsonify(places)
 
 
 @app_views.route('/places/<string:place_id>', methods=['GET'],
@@ -55,7 +54,8 @@ def DELETE_place_by_id(place_id):
         return (jsonify({}))
 
 
-@app_views.route('/cities/<string:city_id>/places', methods=['POST'], strict_slashes=False)
+@app_views.route('/cities/<string:city_id>/places',
+                 methods=['POST'], strict_slashes=False)
 def post_place(city_id):
     """create a new place"""
     onecity = storage.get(City, city_id)
