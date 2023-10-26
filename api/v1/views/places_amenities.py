@@ -1,17 +1,19 @@
 #!/usr/bin/python3
-"""places_amenities.py"""
+"""places amenities routes for the app"""
 import os
+from os import getenv
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 from models import storage
 from models.amenity import Amenity
 from models.place import Place
+# from flasgger.utils import swag_from
 
 
 @app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['POST'],
                  strict_slashes=False)
-@swag_from('documentation/place_amenity/post_place_amenities.yml',
-           methods=['POST'])
+# @swag_from('documentation/place_amenity/post_place_amenities.yml',
+#           methods=['POST'])
 def post_place_amenity(place_id, amenity_id):
     """
     Link a Amenity object to a Place
@@ -26,7 +28,7 @@ def post_place_amenity(place_id, amenity_id):
     if not amenity:
         abort(404)
 
-    if environ.get('HBNB_TYPE_STORAGE') == "db":
+    if getenv('HBNB_TYPE_STORAGE') == "db":
         if amenity in place.amenities:
             return make_response(jsonify(amenity.to_dict()), 200)
         else:
