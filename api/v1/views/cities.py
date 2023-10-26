@@ -10,7 +10,7 @@ from api.v1.views import app_views
 
 @app_views.route('/states/<string:state_id>/cities', methods=['GET'],
                  strict_slashes=False)
-def get_cities_state_by_id(state_id):
+def get_cities_by_state_id(state_id):
     """ Retrieves a cities object: GET /api/v1/states/<state_id>"""
     state_ = {'state_id': state_id}
     cities = []
