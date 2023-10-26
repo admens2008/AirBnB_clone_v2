@@ -57,6 +57,7 @@ class Place(BaseModel, Base):
         def amenities(self):
             """Get a list of amenities based on the
             place_amenities table"""
+            from models.amenity import Amenity
             amenity_list = []
             for amenity in models.storage.all(Amenity).values():
                 if amenity.id in self.amenity_ids and amenity.place_id == self.id::
@@ -66,6 +67,7 @@ class Place(BaseModel, Base):
         @amenities.setter
         def amenities(self, value):
             """bind an amenity to a place for saving"""
+            from models.amenity import Amenity
             if type(value) == Amenity:
                 self.amenity_ids.append(value.id)
 
