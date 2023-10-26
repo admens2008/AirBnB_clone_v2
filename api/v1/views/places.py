@@ -9,15 +9,23 @@ from werkzeug.exceptions import NotFound
 from api.v1.views import app_views
 
 
-@app_views.route('/cities/<string:city_id>/places', methods=['GET'], strict_slashes=False)
-def get_places(city_id):
-    """retreive all places of the application """
-    response = jsonify({"error": "Not found"})
-    response.status_code = 404
-    eachplace = []
-    for s in storage.all(Place).values():
-        eachplace.append(s.to_dict())
-    return jsonify(eachplace)
+@app_views.route('/states/<string:state_id>/cities', methods=['GET'],
+                 strict_slashes=False)
+def get_cities_by_state_id(state_id):
+    """ Retrieves a cities object: GET /api/v1/states/<state_id>"""
+    state_ = {'state_id': state_id}
+    cities = []
+    onecity = None
+    for s in storage.all(City).values():
+        if s.state_id == state_id:
+            cities.append(s.to_dict())
+            onecity = s.to_dict()
+    if len(cities) <= 0:
+        abort(404)
+    else:
+        if len(cities) == 1:
+            return jsonify(onecity)
+        return jsonify(cities)
 
 
 @app_views.route('/places/<string:place_id>', methods=['GET'],
