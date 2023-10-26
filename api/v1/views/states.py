@@ -2,7 +2,7 @@
 """states view to handle all states request API"""
 from models import storage
 from models.state import State
-from flask import Flask, Blueprint, jsonify, abort, request, make_response
+from flask import Flask, jsonify, abort, request, make_response
 from werkzeug.exceptions import NotFound
 from api.v1.views import app_views
 
@@ -43,6 +43,7 @@ def DELETE_state_by_id(state_id):
         storage.delete(eachstate)
         storage.save()
         return (jsonify({}))
+
 
 @app_views.route('/states/', methods=['POST'], strict_slashes=False)
 def post_state():
