@@ -22,7 +22,9 @@ last_name: string - empty string"""
         last_name = ""
     else:
         email = Column(String(128), nullable=False)
-        password = Column(String(128), nullable=False)
+        _password = Column('password',
+                           String(128),
+                           nullable=False)
         first_name = Column(String(128))
         last_name = Column(String(128))
         places = relationship("Place", backref="user", cascade="delete")
