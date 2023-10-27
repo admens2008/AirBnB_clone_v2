@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""app.py to connect to API"""
+"""status of the application to connect to API"""
 from models import storage
 from models.state import State
 from models.amenity import Amenity
@@ -15,7 +15,7 @@ app_views = Blueprint("app_views", __name__, url_prefix="/api/v1")
 
 @app_views.route('/status', strict_slashes=False)
 def hbnbStatus():
-    """ status of the application """
+    """ status of -----  the application """
     return jsonify({"status": "OK"})
 
 

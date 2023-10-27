@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" . Status of your API  and all the application"""
+""" test the application  your API  and all the application"""
 import os
 from flask import Flask, jsonify
 from api.v1.views import app_views
