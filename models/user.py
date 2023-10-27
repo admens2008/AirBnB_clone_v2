@@ -17,7 +17,7 @@ last_name: string - empty string"""
     __tablename__ = "users"
     if os.getenv('HBNB_TYPE_STORAGE') != "db":
         email = ""
-        password = ""
+        _password = ""
         first_name = ""
         last_name = ""
     else:
