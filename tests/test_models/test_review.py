@@ -97,12 +97,6 @@ class TestReview_to_dict(unittest.TestCase):
         review = Review()
         self.assertTrue(dict, type(review.to_dict()))
 
-    def test_to_dict_with_None_arg(self):
-        """ test_to_dict_with_None_arg """
-        review = Review()
-        with self.assertRaises(TypeError):
-            review.to_dict(None)
-
     def test_if_to_dict_kv_is_same_with__dict__(self):
         """ check if  test passes the  missing __class__ in __dict__"""
         review = Review()

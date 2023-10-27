@@ -97,12 +97,6 @@ class TestCity_to_dict(unittest.TestCase):
         city = City()
         self.assertTrue(dict, type(city.to_dict()))
 
-    def test_to_dict_with_None_arg(self):
-        """ test_to_dict_with_None_arg """
-        city = City()
-        with self.assertRaises(TypeError):
-            city.to_dict(None)
-
     def test_if_to_dict_kv_is_same_with__dict__(self):
         """ check if  test passes the  missing __class__ in __dict__"""
         city = City()

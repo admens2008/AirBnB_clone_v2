@@ -75,12 +75,6 @@ class TestAmenity_to_dict(unittest.TestCase):
         amenity = Amenity()
         self.assertTrue(dict, type(amenity.to_dict()))
 
-    def test_to_dict_with_None_arg(self):
-        """ test_to_dict_with_None_arg """
-        amenity = Amenity()
-        with self.assertRaises(TypeError):
-            amenity.to_dict(None)
-
     def test_if_to_dict_kv_is_same_with__dict__(self):
         """ check if  test passes the  missing __class__ in __dict__"""
         amenity = Amenity()

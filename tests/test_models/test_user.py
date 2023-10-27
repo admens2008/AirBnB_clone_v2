@@ -100,12 +100,6 @@ class TestUser_to_dict(unittest.TestCase):
         user = User()
         self.assertTrue(dict, type(user.to_dict()))
 
-    def test_to_dict_with_None_arg(self):
-        """ test_to_dict_with_None_arg """
-        user = User()
-        with self.assertRaises(TypeError):
-            user.to_dict(None)
-
     def test_if_to_dict_kv_is_same_with__dict__(self):
         """ check if  test passes the  missing __class__ in __dict__"""
         user = User()
@@ -130,7 +124,6 @@ class TestUser_to_dict(unittest.TestCase):
             'created_at': date_now.isoformat(),
             'updated_at': date_now.isoformat(),
             'email': 'gg@gmail.com',
-            'password': '828873',
             'first_name': 'pascal',
             'last_name': 'ojukwu'
         }

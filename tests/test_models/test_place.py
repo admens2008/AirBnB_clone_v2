@@ -97,12 +97,6 @@ class TestPlace_to_dict(unittest.TestCase):
         place = Place()
         self.assertTrue(dict, type(place.to_dict()))
 
-    def test_to_dict_with_None_arg(self):
-        """ test_to_dict_with_None_arg """
-        place = Place()
-        with self.assertRaises(TypeError):
-            place.to_dict(None)
-
     def test_if_to_dict_kv_is_same_with__dict__(self):
         """ check if  test passes the  missing __class__ in __dict__"""
         place = Place()

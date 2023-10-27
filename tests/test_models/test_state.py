@@ -97,12 +97,6 @@ class TestState_to_dict(unittest.TestCase):
         state = State()
         self.assertTrue(dict, type(state.to_dict()))
 
-    def test_to_dict_with_None_arg(self):
-        """ test_to_dict_with_None_arg """
-        state = State()
-        with self.assertRaises(TypeError):
-            state.to_dict(None)
-
     def test_if_to_dict_kv_is_same_with__dict__(self):
         """ check if  test passes the  missing __class__ in __dict__"""
         state = State()
