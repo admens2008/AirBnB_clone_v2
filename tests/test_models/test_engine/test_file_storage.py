@@ -1,351 +1,143 @@
 #!/usr/bin/python3
-"""unittest Module for FileStorage class"""
+"""
+Contains the TestFileStorageDocs classes
+"""
 
-from models.base_model import BaseModel
-from models.user import User
-from models.state import State
-from models.place import Place
-from models.city import City
+from datetime import datetime
+import inspect
+import models
+from models.engine import file_storage
 from models.amenity import Amenity
+from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
 from models.review import Review
-from models.engine.file_storage import FileStorage
-import datetime
-from models.__init__ import storage
+from models.state import State
+from models.user import User
 import json
 import os
-import models
+import pep8
 import unittest
-from os import getenv
+FileStorage = file_storage.FileStorage
+classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
-class TestFileStorage_save(unittest.TestCase):
-    """ test save method in Filestorage class """
+class TestFileStorageDocs(unittest.TestCase):
+    """Tests to check the documentation and style of FileStorage class"""
     @classmethod
-    def setUp(self):
-        """ setup enviroments for the unittest """
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
+    def setUpClass(cls):
+        """Set up for the doc tests"""
+        cls.fs_f = inspect.getmembers(FileStorage, inspect.isfunction)
 
-    @classmethod
-    def tearDown(self):
-        """ tear down enviroments  for the unittest"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
+    def test_pep8_conformance_file_storage(self):
+        """Test that models/engine/file_storage.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['models/engine/file_storage.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def clearStorage(self):
-        """ clear the file contents for the unittest"""
+    def test_pep8_conformance_test_file_storage(self):
+        """Test tests/test_models/test_file_storage.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['tests/test_models/test_engine/\
+test_file_storage.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
+
+    def test_file_storage_module_docstring(self):
+        """Test for the file_storage.py module docstring"""
+        self.assertIsNot(file_storage.__doc__, None,
+                         "file_storage.py needs a docstring")
+        self.assertTrue(len(file_storage.__doc__) >= 1,
+                        "file_storage.py needs a docstring")
+
+    def test_file_storage_class_docstring(self):
+        """Test for the FileStorage class docstring"""
+        self.assertIsNot(FileStorage.__doc__, None,
+                         "State class needs a docstring")
+        self.assertTrue(len(FileStorage.__doc__) >= 1,
+                        "State class needs a docstring")
+
+    def test_fs_func_docstrings(self):
+        """Test for the presence of docstrings in FileStorage methods"""
+        for func in self.fs_f:
+            self.assertIsNot(func[1].__doc__, None,
+                             "{:s} method needs a docstring".format(func[0]))
+            self.assertTrue(len(func[1].__doc__) >= 1,
+                            "{:s} method needs a docstring".format(func[0]))
+
+
+class TestFileStorage(unittest.TestCase):
+    """Test the FileStorage class"""
+
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     "not testing file storage")
+    def test_all_returns_dict(self):
+        """Test that all returns the FileStorage.__objects attr"""
+        storage = FileStorage()
+        new_dict = storage.all()
+        self.assertEqual(type(new_dict), dict)
+        self.assertIs(new_dict, storage._FileStorage__objects)
+
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     "not testing file storage")
+    def test_new(self):
+        """test that new adds an object to the FileStorage.__objects attr"""
+        storage = FileStorage()
+        save = FileStorage._FileStorage__objects
         FileStorage._FileStorage__objects = {}
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
+        test_dict = {}
+        for key, value in classes.items():
+            with self.subTest(key=key, value=value):
+                instance = value()
+                instance_key = instance.__class__.__name__ + "." + instance.id
+                storage.new(instance)
+                test_dict[instance_key] = instance
+                self.assertEqual(test_dict, storage._FileStorage__objects)
+        FileStorage._FileStorage__objects = save
 
-    def test_save_with_None_parameter(self):
-        """Test that models.storage.save() with None parameter does nothing"""
-        pass
-        # Check that the method returns None
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     "not testing file storage")
+    def test_save(self):
+        """Test that save properly saves objects to file.json"""
+        storage = FileStorage()
+        new_dict = {}
+        for key, value in classes.items():
+            instance = value()
+            instance_key = instance.__class__.__name__ + "." + instance.id
+            new_dict[instance_key] = instance
+        save = FileStorage._FileStorage__objects
+        FileStorage._FileStorage__objects = new_dict
+        storage.save()
+        FileStorage._FileStorage__objects = save
+        for key, value in new_dict.items():
+            new_dict[key] = value.to_dict()
+        string = json.dumps(new_dict)
+        with open("file.json", "r") as f:
+            js = f.read()
+        self.assertEqual(json.loads(string), json.loads(js))
 
-    def test_save(self, obj=None):
-        """ test_save_bypassing_None_parameter """
-        with self.assertRaises(TypeError):
-            models.storage.save(obj)
-
-    def test_FileStorage_save(self, obj=None):
-        """ test_save_bypassing_None_parameter """
-        with self.assertRaises(TypeError):
-            store = FileStorage()
-            store.save(obj)
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_save_method(self):
-        """ test save function in filestorage class"""
-        bmodel = BaseModel()
-        user = User()
-        state = State()
-        place = Place()
-        city = City()
-        amenity = Amenity()
-        review = Review()
-        models.storage.new(bmodel)
-        models.storage.new(user)
-        models.storage.new(state)
-        models.storage.new(place)
-        models.storage.new(city)
-        models.storage.new(amenity)
-        models.storage.new(review)
-        models.storage.save()
-        with open("file.json", 'r') as file:
-            getllobjs = file.read()
-        self.assertIn("BaseModel." + bmodel.id, getllobjs)
-        self.assertIn("User." + user.id, getllobjs)
-        self.assertIn("State." + state.id, getllobjs)
-        self.assertIn("Place." + place.id, getllobjs)
-        self.assertIn("City." + city.id, getllobjs)
-        self.assertIn("Amenity." + amenity.id, getllobjs)
-        self.assertIn("Review." + review.id, getllobjs)
-
-
-class TestFileStorage_reload(unittest.TestCase):
-    """ test reload method in Filestorage class """
-    @classmethod
-    def setUp(self):
-        """ set up enviroments for the unit test """
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
-
-    @classmethod
-    def tearDown(self):
-        """ tear down enviroments """
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    def clearStorage(self):
-        """ clear the file contents """
-        FileStorage._FileStorage__objects = {}
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_reload(self):
-        """ test_reload function to see if it works"""
-        bmodel = BaseModel()
-        user = User()
-        state = State()
-        place = Place()
-        city = City()
-        amenity = Amenity()
-        review = Review()
-        models.storage.new(bmodel)
-        models.storage.new(user)
-        models.storage.new(state)
-        models.storage.new(place)
-        models.storage.new(city)
-        models.storage.new(amenity)
-        models.storage.new(review)
-        models.storage.save()
-        storage.reload()
-        getllobjs = FileStorage._FileStorage__objects
-        self.assertIn("BaseModel." + bmodel.id, getllobjs)
-        self.assertIn("User." + user.id, getllobjs)
-        self.assertIn("State." + state.id, getllobjs)
-        self.assertIn("Place." + place.id, getllobjs)
-        self.assertIn("City." + city.id, getllobjs)
-        self.assertIn("Amenity." + amenity.id, getllobjs)
-        self.assertIn("Review." + review.id, getllobjs)
-
-    def test_reload_bypassing_None_parameter(self):
-        """ test_reload_bypassing_None_parameter """
-        with self.assertRaises(TypeError):
-            storage.reload(None)
-
-
-class TestFileStorage_all(unittest.TestCase):
-    """ Test all method for file storage"""
-    @classmethod
-    def setUp(self):
-        """ setup enviroments for the unittest"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
-
-    @classmethod
-    def tearDown(self):
-        """ tear down enviroments for the unittest"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    def clearStorage(self):
-        """ clear the file contents  """
-        FileStorage._FileStorage__objects = {}
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_all(self):
-        """ test all type """
-        self.assertEqual(dict, type(models.storage.all()))
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_all(self):
-        """ __objects is properly returned """
-        new = BaseModel()
-        temp = storage.all()
-        self.assertIsInstance(temp, dict)
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_all_with_parameter(self):
-        """ __objects is properly returned """
-        new = State()
-        new2 = BaseModel()
-        temp = storage.all(cls='State')
-        self.assertIsInstance(temp, dict)
-        temp2 = storage.all(cls='BaseModel')
-        self.assertIsInstance(temp2, dict)
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_all_method(self):
-        """ test_all_method """
-        bmodel = BaseModel()
-        user = User()
-        state = State()
-        place = Place()
-        city = City()
-        amenity = Amenity()
-        review = Review()
-        models.storage.new(bmodel)
-        models.storage.new(user)
-        models.storage.new(state)
-        models.storage.new(place)
-        models.storage.new(city)
-        models.storage.new(amenity)
-        models.storage.new(review)
-        models.storage.save()
-        getllobjs = models.storage.all().keys()
-        self.assertIn("BaseModel." + bmodel.id, getllobjs)
-        self.assertIn("User." + user.id, getllobjs)
-        self.assertIn("State." + state.id, getllobjs)
-        self.assertIn("Place." + place.id, getllobjs)
-        self.assertIn("City." + city.id, getllobjs)
-        self.assertIn("Amenity." + amenity.id, getllobjs)
-        self.assertIn("Review." + review.id, getllobjs)
-
-
-class TestFileStorage_all_get_count(unittest.TestCase):
-    """ Test all method for file storage"""
-    @classmethod
-    def setUp(self):
-        """ setup enviroments for the unittest"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
-
-    @classmethod
-    def tearDown(self):
-        """ tear down enviroments for the unittest"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    def clearStorage(self):
-        """ clear the file contents  """
-        FileStorage._FileStorage__objects = {}
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', "no DB")
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     "not testing file storage")
     def test_get(self):
-        """ Tests method for obtaining  file storage"""
+        """Test that the get method properly retrievs objects"""
         storage = FileStorage()
-        dic = {"name": "Cundinamarca"}
-        instance = State(**dic)
-        storage.new(instance)
-        storage.save()
-        get_instance = storage.get(State, instance.id)
-        self.assertEqual(get_instance, instance)
-        c = storage.count(State)
-        self.assertEqual(len(storage.all(State)), c)
+        self.assertIs(storage.get("User", "blah"), None)
+        self.assertIs(storage.get("blah", "blah"), None)
+        new_user = User()
+        new_user.save()
+        self.assertIs(storage.get("User", new_user.id), new_user)
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', "no DB")
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     "not testing file storage")
     def test_count(self):
-        """ Tests count method file storage """
         storage = FileStorage()
-        dic = {"name": "Vecindad"}
-        state = State(**dic)
-        storage.new(state)
-        storage.save()
-        dic = {"name": "Mexico", "state_id": state.id}
-        city = City(**dic)
-        storage.new(city)
-        storage.save()
-        c = storage.count(City)
-        self.assertEqual(len(storage.all(City)), c)
-
-
-class TestFileStorage__file_path(unittest.TestCase):
-    """ Test __file_path if its correct"""
-    def FileStorage__file_path(self):
-        """ Test __file_path if its correct"""
-        self.assertEqual("file.json", FileStorage__file_path)
-        self.assertEqual(str, type(FileStorage._FileStorage__file_path))
-
-
-class TestFileStorage__init__(unittest.TestCase):
-    """ Test all method for file storage"""
-
-    def test_FileStorage_with_none_parameters(self):
-        """ test_FileStorage_with_none_parameters"""
-        with self.assertRaises(TypeError):
-            FileStorage(None)
-
-    def test_FileStorage_type(self):
-        """ test FileStorage type """
-        self.assertEqual(type(FileStorage()), FileStorage)
-
-    def test_FileStorage_private_attributes_type(self):
-        """ test_FileStorage_private_attributes_type """
-        self.assertEqual(str, type(FileStorage._FileStorage__file_path))
-
-    def testFileStorage_private_dict_type(self):
-        """testFileStorage_private_dict_type"""
-        self.assertEqual(dict, type(FileStorage._FileStorage__objects))
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_storage_type(self):
-        """ test storage type"""
-        self.assertEqual(type(models.storage), FileStorage)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        initial_length = len(storage.all())
+        self.assertEqual(storage.count(), initial_length)
+        state_len = len(storage.all("State"))
+        self.assertEqual(storage.count("State"), state_len)
+        new_state = State()
+        new_state.save()
+        self.assertEqual(storage.count(), initial_length + 1)
+        self.assertEqual(storage.count("State"), state_len + 1)
