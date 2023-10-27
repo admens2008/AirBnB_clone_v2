@@ -42,7 +42,7 @@ class FileStorage:
     def save(self):
         """ serializes the object into the json file """
         objdict = self.__objects
-        with open(FileStorage.__file_path, "w") as file:
+        with open(FileStorage.__file_path, "w", encoding="utf-8") as file:
             dict = {k: val.to_dict(save_fs=1) for k, val in objdict.items()}
             json.dump(dict, file)
 
@@ -51,7 +51,7 @@ class FileStorage:
         do nothing if the file doesnt exist"""
         if not os.path.isfile(FileStorage.__file_path):
             return
-        with open(FileStorage.__file_path, "r") as file:
+        with open(FileStorage.__file_path, "r", encoding="utf-8") as file:
             pyobj = json.load(file)
             for cl in pyobj.values():
                 clName = cl["__class__"]
