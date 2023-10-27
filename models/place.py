@@ -52,7 +52,7 @@ class Place(BaseModel, Base):
         """initializes Place"""
         super().__init__(*args, **kwargs)
 
-    if os.getenv('HBNB_TYPE_STORAGE') != "db"
+    if os.getenv('HBNB_TYPE_STORAGE') != "db":
         @property
         def amenities(self):
             """getter attribute returns the list of Amenity instances"""
