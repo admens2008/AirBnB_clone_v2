@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" objects that handle all default RestFul API actions for Users """
+""" RestFul actions for U"""
 from models.user import User
 from models import storage
 from api.v1.views import app_views
@@ -9,7 +9,7 @@ from flask import abort, jsonify, make_response, request
 @app_views.route('/users', methods=['GET'], strict_slashes=False)
 def get_users():
     """
-    Retrieves the list of all user objects
+    Retrieves the groups of all user objects
     or a specific user
     """
     all_users = storage.all(User).values()
@@ -33,7 +33,7 @@ def get_user(user_id):
                  strict_slashes=False)
 def delete_user(user_id):
     """
-    Deletes a user Object
+    Deletes a user Objectdd
     """
 
     user = storage.get(User, user_id)
@@ -50,7 +50,7 @@ def delete_user(user_id):
 @app_views.route('/users', methods=['POST'], strict_slashes=False)
 def post_user():
     """
-    Creates a user
+    Creates a user_
     """
     if not request.get_json():
         abort(400, description="Not a JSON")
@@ -69,7 +69,7 @@ def post_user():
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def put_user(user_id):
     """
-    Updates a user
+    Updates a user_
     """
     user = storage.get(User, user_id)
 
