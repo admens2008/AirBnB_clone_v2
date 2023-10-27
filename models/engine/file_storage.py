@@ -27,7 +27,7 @@ class FileStorage:
             cls_dict = {}
             if isinstance(cls, str):
                 cls = eval(cls)
-            for k, v in FileStorage.__objects.items():
+            for k, v in self.__objects.items():
                 if isinstance(v, cls):
                     cls_dict[k] = v
             return cls_dict
@@ -41,7 +41,7 @@ class FileStorage:
 
     def save(self):
         """ serializes the object into the json file """
-        objdict = FileStorage.__objects
+        objdict = self.__objects
         with open(FileStorage.__file_path, "w", encoding="utf-8") as file:
             dict = {k: val.to_dict(save_fs=1) for k, val in objdict.items()}
             json.dump(dict, file)
@@ -63,7 +63,7 @@ class FileStorage:
         if obj:
             clName = obj.__class__.__name__
             key = f"{clName}.{obj.id}"
-            del FileStorage.__objects[key]
+            del self.__objects[key]
 
     def close(self):
         """ calls reload()"""
