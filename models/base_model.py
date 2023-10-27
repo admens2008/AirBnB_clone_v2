@@ -36,7 +36,7 @@ class BaseModel:
         # self.updated_at = datetime.today()
         if kwargs is not None and kwargs != {}:
             for k, v in kwargs.items():
-                if key == '__class__':
+                if k == '__class__':
                     continue
                 setattr(self, key, value)
                 if k == "created_at":
