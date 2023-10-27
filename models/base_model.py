@@ -99,6 +99,9 @@ class BaseModel:
         else:
             dictcopy["updated_at"] = self.updated_at.isoformat()
         dictcopy["__class__"] = self.__class__.__name__
+        if '_password' in dictcopy:
+            dictcopy['password'] = dictcopy['_password']
+            dictcopy.pop('_password', None)
         if '_sa_instance_state' in dictcopy.keys():
             del dictcopy['_sa_instance_state']
         if save_fs is None:
