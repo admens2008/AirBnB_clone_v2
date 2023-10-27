@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" Lets start the application running APP.py """
+""" Flask Application """
 from api.v1.views import app_views
 from models import storage
 from os import environ
