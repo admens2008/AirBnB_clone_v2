@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""status of the application to connect to API"""
+""" statistics of the each object in the application """
 from models import storage
 from models.state import State
 from models.amenity import Amenity
@@ -13,7 +13,7 @@ from flask import Flask, Blueprint, jsonify
 
 @app_views.route('/status', strict_slashes=False)
 def hbnbStatus():
-    """ status of -----  the application """
+    """ statistics of the each object in the application """
     return jsonify({"status": "OK"})
 
 
