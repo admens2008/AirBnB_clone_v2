@@ -1,256 +1,132 @@
 #!/usr/bin/python3
-""" unittest for amenity class """
-from models.engine.file_storage import FileStorage
-from models.base_model import BaseModel
-from models.user import User
+"""
+Contains the TestUserDocs classes
+"""
+
 from datetime import datetime
-import json
-import os
-from time import sleep
+import inspect
 import models
+from models import user
+from models.base_model import BaseModel
+import pep8
 import unittest
-from os import getenv
-import MySQLdb
+User = user.User
 
 
-@unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
-class TestUser_save(unittest.TestCase):
-    """ test save method for User class """
+class TestUserDocs(unittest.TestCase):
+    """Tests to check the documentation and style of User class"""
     @classmethod
-    def setUp(self):
-        """setUp the enviroment for testing"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
+    def setUpClass(cls):
+        """Set up for the doc tests"""
+        cls.user_f = inspect.getmembers(User, inspect.isfunction)
 
-    @classmethod
-    def tearDown(self):
-        """ teardown the enviroment to end the testing"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
+    def test_pep8_conformance_user(self):
+        """Test that models/user.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['models/user.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_save_for_user_object(self):
-        """ test_save_for_user_object """
+    def test_pep8_conformance_test_user(self):
+        """Test that tests/test_models/test_user.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['tests/test_models/test_user.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
+
+    def test_user_module_docstring(self):
+        """Test for the user.py module docstring"""
+        self.assertIsNot(user.__doc__, None,
+                         "user.py needs a docstring")
+        self.assertTrue(len(user.__doc__) >= 1,
+                        "user.py needs a docstring")
+
+    def test_user_class_docstring(self):
+        """Test for the City class docstring"""
+        self.assertIsNot(User.__doc__, None,
+                         "User class needs a docstring")
+        self.assertTrue(len(User.__doc__) >= 1,
+                        "User class needs a docstring")
+
+    def test_user_func_docstrings(self):
+        """Test for the presence of docstrings in User methods"""
+        for func in self.user_f:
+            self.assertIsNot(func[1].__doc__, None,
+                             "{:s} method needs a docstring".format(func[0]))
+            self.assertTrue(len(func[1].__doc__) >= 1,
+                            "{:s} method needs a docstring".format(func[0]))
+
+
+class TestUser(unittest.TestCase):
+    """Test the User class"""
+    def test_is_subclass(self):
+        """Test that User is a subclass of BaseModel"""
         user = User()
-        user.save()
-        Ukey = "User." + user.id
-        objs = models.storage.all()
-        with open("file.json", "r") as file:
-            self.assertIn(Ukey, file.read())
-            self.assertIn(Ukey, objs)
+        self.assertIsInstance(user, BaseModel)
+        self.assertTrue(hasattr(user, "id"))
+        self.assertTrue(hasattr(user, "created_at"))
+        self.assertTrue(hasattr(user, "updated_at"))
 
-    def test_save_and_pass_argument(self):
-        """ test_save_and_pass_argument """
+    def test_email_attr(self):
+        """Test that User has attr email, and it's an empty string"""
         user = User()
-        with self.assertRaises(TypeError):
-            user.save(None)
+        self.assertTrue(hasattr(user, "email"))
+        if models.storage_t == 'db':
+            self.assertEqual(user.email, None)
+        else:
+            self.assertEqual(user.email, "")
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_save_on_two_calls(self):
-        """ test save for two different calls """
+    def test_password_attr(self):
+        """Test that User has attr password, and it's an empty string"""
         user = User()
-        sleep(0.1)
-        updated_at_1 = user.updated_at
-        user.save()
-        updated_at_2 = user.updated_at
-        self.assertLess(updated_at_1, updated_at_2)
-        sleep(0.1)
-        user.save()
-        self.assertLess(updated_at_2, user.updated_at)
+        self.assertTrue(hasattr(user, "password"))
+        if models.storage_t == 'db':
+            self.assertEqual(user.password, None)
+        else:
+            self.assertEqual(user.password, "")
 
-
-@unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
-class TestUser_to_dict(unittest.TestCase):
-    """class to test to_dict method for Amenity class """
-    @classmethod
-    def setUp(self):
-        """ setUp the enviroment for testing"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
-
-    @classmethod
-    def tearDown(self):
-        """ teardown the enviroment to end the testing"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    def test_to_dict_keys_if_same(self):
-        """  test_to_dict_keys_if_same """
+    def test_first_name_attr(self):
+        """Test that User has attr first_name, and it's an empty string"""
         user = User()
-        self.assertNotEqual(user.__dict__, user.to_dict())
+        self.assertTrue(hasattr(user, "first_name"))
+        if models.storage_t == 'db':
+            self.assertEqual(user.first_name, None)
+        else:
+            self.assertEqual(user.first_name, "")
 
-    def test_to_dict_type(self):
-        """ test_to_dict_type """
+    def test_last_name_attr(self):
+        """Test that User has attr last_name, and it's an empty string"""
         user = User()
-        self.assertTrue(dict, type(user.to_dict()))
+        self.assertTrue(hasattr(user, "last_name"))
+        if models.storage_t == 'db':
+            self.assertEqual(user.last_name, None)
+        else:
+            self.assertEqual(user.last_name, "")
 
-    def test_if_to_dict_kv_is_same_with__dict__(self):
-        """ check if  test passes the  missing __class__ in __dict__"""
-        user = User()
-        self.assertNotEqual(user.to_dict(), user.__dict__)
+    def test_to_dict_creates_dict(self):
+        """test to_dict method creates a dictionary with proper attrs"""
+        u = User()
+        new_d = u.to_dict()
+        self.assertEqual(type(new_d), dict)
+        self.assertFalse("_sa_instance_state" in new_d)
+        for attr in u.__dict__:
+            if attr is not "_sa_instance_state":
+                self.assertTrue(attr in new_d)
+        self.assertTrue("__class__" in new_d)
 
-    def test_if_2_dict_kv_are_equal(self):
-        """ test_if_2_dict_kv_are_equal """
-        date_now = datetime.today()
-        user = User()
-        user.id = "909000"
-        user.email = "gg@gmail.com"
-        user.password = "828873"
-        user.first_name = "pascal"
-        user.last_name = "ojukwu"
-        user.name = "Home appliances"
-        user.created_at = date_now
-        user.updated_at = date_now
-        dict_amenity = {
-            '__class__': 'User',
-            'id': '909000',
-            'name': 'Home appliances',
-            'created_at': date_now.isoformat(),
-            'updated_at': date_now.isoformat(),
-            'email': 'gg@gmail.com',
-            'first_name': 'pascal',
-            'last_name': 'ojukwu'
-        }
-        self.assertDictEqual(dict_amenity, user.to_dict())
+    def test_to_dict_values(self):
+        """test that values in dict returned from to_dict are correct"""
+        t_format = "%Y-%m-%dT%H:%M:%S.%f"
+        u = User()
+        new_d = u.to_dict()
+        self.assertEqual(new_d["__class__"], "User")
+        self.assertEqual(type(new_d["created_at"]), str)
+        self.assertEqual(type(new_d["updated_at"]), str)
+        self.assertEqual(new_d["created_at"], u.created_at.strftime(t_format))
+        self.assertEqual(new_d["updated_at"], u.updated_at.strftime(t_format))
 
-    def test_dict_attributes_if_equal(self):
-        """test_dict_attributes_if_equal"""
-        user = User()
-        user.attr_name = "Pascal"
-        user.age = 67
-        self.assertEqual("Pascal", user.attr_name)
-        self.assertIn("attr_name", user.to_dict())
-
-
-@unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
-class TestUser___str__(unittest.TestCase):
-    @classmethod
-    def setUp(self):
-        """ setup the enviroment for testing"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
-
-    @classmethod
-    def tearDown(self):
-        """ teardown the enviroment to end the testing"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    """ test str method if same """
     def test_str(self):
-        """ test str representation """
+        """test that the str method has the correct output"""
         user = User()
-        s = f"[{user.__class__.__name__}] ({user.id}) {user.__dict__}"
-        self.assertEqual(user.__str__(), s)
-
-
-@unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != "db", "test")
-class TestUser__init__(unittest.TestCase):
-    """ test init method for Amenity"""
-    @classmethod
-    def setUp(self):
-        """ setup the enviroment for testing"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
-
-    @classmethod
-    def tearDown(self):
-        """ teardown the enviroment to end the testing"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    def test_user_with_none_parameters(self):
-        """ test_User_with_none_parameters"""
-        user = User(None)
-        self.assertNotIn(None, user.__dict__.values())
-
-    def test_superclass_of_user(self):
-        """ test_superclass_of_user """
-        user = User()
-        self.assertTrue(issubclass(type(user), BaseModel))
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_name_is_public_class_attribute(self):
-        """ check if attr type is same as dict as well"""
-        user = User()
-        self.assertIn("first_name", dir(User()))
-        self.assertEqual(str, type(User.password))
-        self.assertEqual(str, type(User.email))
-        self.assertEqual(str, type(User.last_name))
-        self.assertEqual(str, type(User.first_name))
-        self.assertNotIn("first_name", user.__dict__)
-
-    def test_User_type(self):
-        """ test User type """
-        self.assertEqual(type(User()), User)
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_User_public_attributes_type(self):
-        """ test_public_public_attributes_type """
-        self.assertEqual(str, type(User.first_name))
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_id_if_typeis_str(self):
-        """ test_id_if_typeis_str"""
-        self.assertEqual(str, type(User().first_name))
-
-    def test_created_at_if_typeis_datetime(self):
-        """ test_created_at_if_type_datetime """
-        self.assertEqual(datetime, type(User().created_at))
-
-    def test_updated_at_if_typeis_datetime(self):
-        """ test_updated_at_if_type_datetime """
-        self.assertEqual(datetime, type(User().updated_at))
-
-    def test_dir(self):
-        """ test dir and name attr"""
-        user = User()
-        user.email = "alx@yahoo.com"
-        self.assertIn("email", dir(User()))
-        self.assertIn("email", user.__dict__)
-
-    def test_two_user_id_if_they_are_not_same(self):
-        """ test_two_amenities_id_if_they_are_not_same """
-        usr = User()
-        usr_1 = User()
-        self.assertNotEqual(usr.id, usr_1.id)
-
-    def test_User_type(self):
-        """ test User type"""
-        self.assertEqual(type(User()), User)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        string = "[User] ({}) {}".format(user.id, user.__dict__)
+        self.assertEqual(string, str(user))
