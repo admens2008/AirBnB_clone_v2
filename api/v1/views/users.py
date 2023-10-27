@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""users view to handle all users request API"""
+"""users view to handle all users_request API"""
 from models import storage
 from models.user import User
 from flask import Flask, jsonify, abort, request, make_response
@@ -62,7 +62,7 @@ def post_user():
 @app_views.route('/users/<string:user_id>', methods=['PUT'],
                  strict_slashes=False)
 def put_user(user_id):
-    """update a user"""
+    """update a user record"""
     user = storage.get(User, user_id)
     if user is None:
         abort(404)
