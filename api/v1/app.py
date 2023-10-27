@@ -1,8 +1,5 @@
 #!/usr/bin/python3
-""" ============================================
-=====================================================
-============================================================
-============================================================"""
+""" jujujuju """
 from models import storage
 from api.v1.views import app_views
 from os import environ
@@ -15,27 +12,20 @@ app.register_blueprint(app_views)
 
 @app.teardown_appcontext
 def close_db(error):
-    """ =========================
-    ===============================
-    ==================================="""
+    """  close the session connection when done"""
     storage.close()
 
 
 @app.errorhandler(404)
 def not_found(error):
     """ 404 Error
-    ---
-    responses:
-      404:
+    handle error 404
         description: a resource was not found
     """
     return make_response(jsonify({'error': "Not found"}), 404)
 
 
 if __name__ == "__main__":
-    """ Main Function============================
-    =========================================
-    ==================================================="""
     host = environ.get('HBNB_API_HOST')
     port = environ.get('HBNB_API_PORT')
     if not host:
