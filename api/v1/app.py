@@ -19,7 +19,7 @@ def page_not_found(error):
 
 @app.teardown_appcontext
 def teardown(exc):
-    """Remove the current SQLAlchemy session."""
+    """Remove the current connection"""
     storage.close()
 
 
