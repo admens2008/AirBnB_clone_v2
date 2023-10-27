@@ -27,8 +27,6 @@ def not_found(error):
 
 
 if __name__ == "__main__":
-    """ Ready to lauch the application
-     """
     host = environ.get('HBNB_API_HOST')
     port = environ.get('HBNB_API_PORT')
     if not host:
