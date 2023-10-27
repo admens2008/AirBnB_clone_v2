@@ -1,4 +1,4 @@
-# AirBnB clone - The console
+# AirBnB clone - RESTFUL Api
 ![Optional Text](hbnb.png)
 ## Background Context
 ***Welcome to the AirBnB clone project!***<br>
