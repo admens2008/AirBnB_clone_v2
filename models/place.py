@@ -66,7 +66,7 @@ class Place(BaseModel, Base):
 
         @property
         def reviews(self):
-            """getter attribute returns the list of Review instances"""
+            """getter attribute return the list of Review instances"""
             from models.review import Review
             review_list = []
             all_reviews = models.storage.all(Review)
