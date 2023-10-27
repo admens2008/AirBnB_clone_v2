@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-""" jujujuju """
-from models import storage
+""" Lets start the application running APP.py """
 from api.v1.views import app_views
+from models import storage
 from os import environ
 from flask import Flask, render_template, make_response, jsonify
 
@@ -26,6 +26,8 @@ def not_found(error):
 
 
 if __name__ == "__main__":
+    """ Ready to lauch the application
+     """
     host = environ.get('HBNB_API_HOST')
     port = environ.get('HBNB_API_PORT')
     if not host:
