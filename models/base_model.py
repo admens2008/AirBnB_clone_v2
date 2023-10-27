@@ -6,11 +6,15 @@ from uuid import uuid4
 from datetime import datetime
 from sqlalchemy import *
 from sqlalchemy.orm import *
+from os import getenv
 from sqlalchemy.ext.declarative import declarative_base
 import models
 
 
-Base = declarative_base()
+if getenv('HBNB_TYPE_STORAGE') == "db":
+    Base = declarative_base()
+else:
+    Base = object
 
 
 class BaseModel:
@@ -78,7 +82,7 @@ class BaseModel:
             del dictcopy['_sa_instance_state']
         return dictcopy
 
-    def to_dict(self):
+    def to_dict(self, save_fs=None):
         """return all keys and values of the objectinstance from __dict__"""
         dictcopy = self.__dict__.copy()
         if type(self.created_at) is str:
@@ -94,6 +98,9 @@ class BaseModel:
         dictcopy["__class__"] = self.__class__.__name__
         if '_sa_instance_state' in dictcopy.keys():
             del dictcopy['_sa_instance_state']
+        if save_fs is None:
+            if "password" in dictcopy.keys():
+                del dictcopy["password"]
         return dictcopy
 
     def delete(self):
