@@ -52,24 +52,17 @@ class Place(BaseModel, Base):
         """initializes Place"""
         super().__init__(*args, **kwargs)
 
-    if os.getenv('HBNB_TYPE_STORAGE') != "db":
+    if os.getenv('HBNB_TYPE_STORAGE') != "db"
         @property
         def amenities(self):
-            """Get a list of amenities based on the
-            place_amenities table"""
+            """getter attribute returns the list of Amenity instances"""
             from models.amenity import Amenity
             amenity_list = []
-            for amenity in models.storage.all(Amenity).values():
-                if amenity.id in self.amenity_ids and amenity.place_id == self.id::
+            all_amenities = models.storage.all(Amenity)
+            for amenity in all_amenities.values():
+                if amenity.place_id == self.id:
                     amenity_list.append(amenity)
             return amenity_list
-
-        @amenities.setter
-        def amenities(self, value):
-            """bind an amenity to a place for saving"""
-            from models.amenity import Amenity
-            if type(value) == Amenity:
-                self.amenity_ids.append(value.id)
 
         @property
         def cities(self):
