@@ -12,20 +12,18 @@ app.register_blueprint(app_views)
 
 @app.teardown_appcontext
 def close_db(error):
-    """  close the session connection when done"""
+    """close the session connection when done"""
     storage.close()
 
 
 @app.errorhandler(404)
 def not_found(error):
-    """ 404 Error
-    handle error 404
-        description: a resource was not found
-    """
+    """404 Error handler"""
     return make_response(jsonify({'error': "Not found"}), 404)
 
 
 if __name__ == "__main__":
+    """main function"""
     host = environ.get('HBNB_API_HOST')
     port = environ.get('HBNB_API_PORT')
     if not host:
