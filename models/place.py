@@ -65,17 +65,6 @@ class Place(BaseModel, Base):
             return amenity_list
 
         @property
-        def reviews(self):
-            """getter attribute returns the list of Review instances"""
-            from models.review import Review
-            review_list = []
-            all_reviews = models.storage.all(Review)
-            for review in all_reviews.values():
-                if review.place_id == self.id:
-                    review_list.append(review)
-            return review_list
-
-        @property
         def cities(self):
             """getter attribute reviewa that returns the list
               of reviews instances with place_id equals to the
