@@ -7,8 +7,10 @@ from models.user import User
 from models.review import Review
 from models.city import City
 from models.place import Place
-from api.v1.views import app_views
+# from api.v1.views import app_views
 from flask import Flask, Blueprint, jsonify
+
+app_views = Blueprint("app_views", __name__, url_prefix="/api/v1")
 
 
 @app_views.route('/status', strict_slashes=False)
