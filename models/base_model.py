@@ -38,7 +38,7 @@ class BaseModel:
             for k, v in kwargs.items():
                 if k == '__class__':
                     continue
-                setattr(self, key, value)
+                setattr(self, k, v)
                 if k == "created_at":
                     self.__dict__[k] = datetime.strptime(v, str_fdate)
                 elif k == "updated_at":
