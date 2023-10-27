@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-""" testing the application to see if its ok """
-
+""" hjhkkllkllnnjhjj """
 from models.amenity import Amenity
 from models.city import City
 from models.place import Place
@@ -27,5 +26,4 @@ def number_objects():
     num_objs = {}
     for i in range(len(classes)):
         num_objs[names[i]] = storage.count(classes[i])
-
     return jsonify(num_objs)
