@@ -3,7 +3,7 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import *
 from sqlalchemy.orm import *
-from hashlib import md5
+import hashlib
 import os
 
 
