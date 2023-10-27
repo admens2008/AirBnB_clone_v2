@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" init the package on load """
+"""init the package on load"""
 
 from flask import Blueprint
 
