@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-""" Flask Application """
-
+"""states view to handle all states request API"""
 from api.v1.views import app_views
 from models import storage
 from os import environ
