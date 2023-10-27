@@ -102,7 +102,7 @@ class BaseModel:
         if '_sa_instance_state' in dictcopy.keys():
             del dictcopy['_sa_instance_state']
         if save_fs is None:
-            if "password" in dictcopy.keys():
+            if "password" in dictcopy:
                 del dictcopy["password"]
         return dictcopy
 
