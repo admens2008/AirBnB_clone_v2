@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 """Create a new view for User object that
 handles all default RESTFul API actions:"""
-
-from api.v1.views import app_views
-from flask import abort, jsonify, make_response, request
 from models import storage
 from models.user import User
+from api.v1.views import app_views
+from flask import abort, jsonify, make_response, request
 
 
 @app_views.route('/users', methods=['GET'], strict_slashes=False)
