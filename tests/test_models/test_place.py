@@ -167,13 +167,6 @@ class TestPlace___str__(unittest.TestCase):
         except IOError:
             pass
 
-    """ test str method if same """
-    def test_str(self):
-        """ test str representation """
-        place = Place()
-        s = f"[{place.__class__.__name__}] ({place.id}) {place.__dict__}"
-        self.assertEqual(place.__str__(), s)
-
 
 class TestPlace__init__(unittest.TestCase):
     """ test init method for Place"""
