@@ -13,7 +13,7 @@ from os import getenv
 
 
 class TestReview_save(unittest.TestCase):
-    """ test save method for Review class """
+    """ test save method  for Review class """
     @classmethod
     def setUp(self):
         """setUp the enviroment for testing"""
