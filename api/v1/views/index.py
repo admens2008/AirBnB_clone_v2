@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""states view to handle all states request API"""
+"""statistics view to handle all  requestAPI"""
 from models.amenity import Amenity
 from models.city import City
 from models.place import Place
@@ -13,7 +13,7 @@ from flask import jsonify
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def status():
-    """Status of appii ==="""
+    """Status me the status of my application"""
     return jsonify({"status": "OK"})
 
 
