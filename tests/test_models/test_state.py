@@ -16,7 +16,7 @@ class TestState_save(unittest.TestCase):
     """ test save method for City class """
     @classmethod
     def setUp(self):
-        """setUp the enviroment for testing"""
+        """setUp the  enviroment for testing"""
         try:
             os.rename("file.json", "pascal")
         except IOError:
