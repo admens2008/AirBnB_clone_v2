@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """Doc test for my module app.py
 """
+import sys
+sys.path.append('../..')
 from api.v1.views import app_views
 from flask import Flask, render_template, make_response, jsonify
 from models import storage
