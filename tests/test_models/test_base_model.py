@@ -15,7 +15,7 @@ import json
 
 
 class TestBaseModel___init__(unittest.TestCase):
-    """ testing the BaseModel ___init___ method """
+    """ testing the BaseModel  ___init___ method """
 
     def test_no_arg_init(self):
         """ test for no arguements """
