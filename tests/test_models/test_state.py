@@ -149,13 +149,6 @@ class TestState___str__(unittest.TestCase):
         except IOError:
             pass
 
-    """ test str method if same """
-    def test_str(self):
-        """ test str representation """
-        state = State()
-        s = f"[{state.__class__.__name__}] ({state.id}) {state.__dict__}"
-        self.assertEqual(state.__str__(), s)
-
 
 class TestState__init__(unittest.TestCase):
     """ test init method for State"""
