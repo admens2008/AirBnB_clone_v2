@@ -104,7 +104,7 @@ class TestAmenity_to_dict(unittest.TestCase):
         amenity.age = 67
         self.assertEqual("Pascal", amenity.attr_name)
         self.assertIn("attr_name", amenity.to_dict())
-        
+
 
 class TestAmenity__init__(unittest.TestCase):
     """ test init method for Amenity"""

@@ -50,7 +50,7 @@ class DBStorage:
                 query = self.__session.query(item)
                 for row in query:
                     clName = row.__class__.__name__
-                    #key = f"{clName}.{row.id}"
+                    # key = f"{clName}.{row.id}"
                     key = "{}.{}".format(clName, row.id)
                     alldict[key] = row
         else:

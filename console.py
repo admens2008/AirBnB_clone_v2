@@ -252,16 +252,16 @@ class HBNBCommand(cmd.Cmd):
                         au2 = au[2]
                     if len(argl[1]) > 0 and not cmd[0] == "update":
                         # call = f"{argl[0]} {argl[1]}"
-                        call = "{} {}".format(args[0], args[1])
+                        call = "{} {}".format(argl[0], argl[1])
                     elif cmd[0] == "update" and len(aul) <= 0 and len(au) > 0:
                         # call = f"{argl[0]} {au0} {au1} {au2}"
-                        call = "{} {} {} {}".format(args[0], au0, au1, au2)
+                        call = "{} {} {} {}".format(argl[0], au0, au1, au2)
                     elif cmd[0] == "update" and len(aul) > 0:
                         # call = f"{argl[0]} {aul[0]} {aud}"
                         call = "{} {} {}".format(args[0], aul[0], aud)
                     else:
                         # call = f"{argl[0]} {''}"
-                        call = "{} {}".format(args[0], '') 
+                        call = "{} {}".format(argl[0], '')
                     return func[cmd[0]](call)
         print("*** Unknown syntax: {}".format(arg))
         return False
