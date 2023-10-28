@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 """statistics view to handle all  requestAPI"""
+import sys
+sys.path.append('../../../')
 from models.amenity import Amenity
 from models.city import City
 from models.place import Place
