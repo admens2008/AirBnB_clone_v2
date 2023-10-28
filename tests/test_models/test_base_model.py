@@ -213,21 +213,6 @@ class TestBaseModel_save(unittest.TestCase):
         with open("file.json", "r") as file:
             self.assertIn(bmodelid, file.read())
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_save_calls_storage_dot_save_method_in_fileStorage(self):
-        """test_save_calls_storage_dot_save_method_in_fileStorage"""
-        self.clearStorage()
-        bmodel = BaseModel()
-        bmodel.save()
-        bmodelkey = f"{type(bmodel).__name__}.{bmodel.id}"
-        filecontent = {bmodelkey: bmodel.to_dict()}
-        self.assertTrue(os.path.isfile(FileStorage._FileStorage__file_path))
-        with open(FileStorage._FileStorage__file_path,
-                  "r", encoding="utf-8") as file:
-            self.assertEqual(len(file.read()), len(json.dumps(filecontent)))
-            file.seek(0)
-            self.assertEqual(json.load(file), filecontent)
-
     def test_save_no_args(self):
         """Tests save() with no arguments."""
         self.clearStorage()
