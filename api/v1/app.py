@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Doc
+"""Doc test for my module app.py
 """
 from api.v1.views import app_views
 from flask import Flask, render_template, make_response, jsonify
@@ -18,7 +18,7 @@ def close_db(error):
 
 @app.errorhandler(404)
 def not_found(error):
-    """404 Error handler"""
+    """404 Error handler if the route is wrong"""
     return make_response(jsonify({'error': "Not found"}), 404)
 
 
