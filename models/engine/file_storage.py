@@ -70,11 +70,10 @@ class FileStorage:
         self.reload()
 
     def get(self, cls, id):
-        """ get all object based on class and id"""
+        """ retrieve all objects based on class and id"""
         classes = [User, State, City, Amenity, Place, Review]
         if cls not in classes:
             return None
-
         allobjects = models.storage.all(cls)
         for obj in allobjects.values():
             if (obj.id == id):
@@ -83,7 +82,7 @@ class FileStorage:
 
     def count(self, cls=None):
         """
-        count the number of objects in storage
+        countsall  the number of objects in storage
         """
         count = 0
         classes = [User, State, City, Amenity, Place, Review]
