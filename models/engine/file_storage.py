@@ -36,7 +36,8 @@ class FileStorage:
     def new(self, obj):
         """ sets in object with key classname.id """
         clName = obj.__class__.__name__
-        key = f"{clName}.{obj.id}"
+        # key = f"{clName}.{obj.id}"
+        key = "{}.{}".format(clName, obj.id)
         self.__objects[key] = obj
 
     def save(self):
@@ -62,7 +63,8 @@ class FileStorage:
         """ delete an object if it exist"""
         if obj:
             clName = obj.__class__.__name__
-            key = f"{clName}.{obj.id}"
+            key = "{}.{}".format(clName, obj.id)
+            # key = f"{clName}.{obj.id}"
             del self.__objects[key]
 
     def close(self):
