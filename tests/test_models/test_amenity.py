@@ -13,7 +13,7 @@ import unittest
 
 
 class TestAmenity_save(unittest.TestCase):
-    """ test save method for Amenity class """
+    """ test save method  for Amenity class """
     @classmethod
     def setUp(self):
         try:
