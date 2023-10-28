@@ -53,12 +53,9 @@ class BaseModel:
 
     def __str__(self):
         """ string representation of the BaseModel intance """
-        # clName = self.__class__.__name__
         clName = type(self).__name__
         d = self.__dict__
-        # d.pop("_sa_instance_state", None)
-        str = f"[{clName}] ({self.id}) {d}"
-        # str = f"[{clName}] ({self.id}) {self.to_dict_db()}"
+        str = "[{}] ({}) {}".format(clName, self.id, d)
         return str
 
     def save(self):
