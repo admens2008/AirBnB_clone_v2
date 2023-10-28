@@ -458,6 +458,7 @@ class TestHBNBCommand_destroy(unittest.TestCase):
         except IOError:
             pass
 
+
 class TestHBNBCommand_all(unittest.TestCase):
     """ all command test cases """
     @classmethod
