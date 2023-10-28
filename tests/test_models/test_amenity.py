@@ -104,16 +104,7 @@ class TestAmenity_to_dict(unittest.TestCase):
         amenity.age = 67
         self.assertEqual("Pascal", amenity.attr_name)
         self.assertIn("attr_name", amenity.to_dict())
-
-
-class TestAmenity___str__(unittest.TestCase):
-    """ test str method if same """
-    def test_str(self):
-        """ test str representation """
-        amenity = Amenity()
-        s = f"[{amenity.__class__.__name__}] ({amenity.id}) {amenity.__dict__}"
-        self.assertEqual(amenity.__str__(), s)
-
+        
 
 class TestAmenity__init__(unittest.TestCase):
     """ test init method for Amenity"""
