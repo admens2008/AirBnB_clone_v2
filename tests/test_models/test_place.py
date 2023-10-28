@@ -13,7 +13,7 @@ from os import getenv
 
 
 class TestPlace_save(unittest.TestCase):
-    """ test save method for Place class """
+    """ test save method for Place  class """
     @classmethod
     def setUp(self):
         """setUp the enviroment for testing"""
