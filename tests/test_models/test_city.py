@@ -1,238 +1,114 @@
 #!/usr/bin/python3
-""" unittest for City class """
-from models.engine.file_storage import FileStorage
-from models.base_model import BaseModel
-from models.city import City
+"""
+Contains the TestCityDocs classes
+"""
+
 from datetime import datetime
-import json
-import os
-from time import sleep
+import inspect
 import models
+from models import city
+from models.base_model import BaseModel
+import pep8
 import unittest
-from os import getenv
+City = city.City
 
 
-class TestCity_save(unittest.TestCase):
-    """ test save method for  City class """
+class TestCityDocs(unittest.TestCase):
+    """Tests to check the documentation and style of City class"""
     @classmethod
-    def setUp(self):
-        """setUp the enviroment for testing"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
+    def setUpClass(cls):
+        """Set up for the doc tests"""
+        cls.city_f = inspect.getmembers(City, inspect.isfunction)
 
-    @classmethod
-    def tearDown(self):
-        """ teardown the enviroment to end the testing"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
+    def test_pep8_conformance_city(self):
+        """Test that models/city.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['models/city.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_save_for_city_object(self):
-        """ test_save_for_city_object """
+    def test_pep8_conformance_test_city(self):
+        """Test that tests/test_models/test_city.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['tests/test_models/test_city.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
+
+    def test_city_module_docstring(self):
+        """Test for the city.py module docstring"""
+        self.assertIsNot(city.__doc__, None,
+                         "city.py needs a docstring")
+        self.assertTrue(len(city.__doc__) >= 1,
+                        "city.py needs a docstring")
+
+    def test_city_class_docstring(self):
+        """Test for the City class docstring"""
+        self.assertIsNot(City.__doc__, None,
+                         "City class needs a docstring")
+        self.assertTrue(len(City.__doc__) >= 1,
+                        "City class needs a docstring")
+
+    def test_city_func_docstrings(self):
+        """Test for the presence of docstrings in City methods"""
+        for func in self.city_f:
+            self.assertIsNot(func[1].__doc__, None,
+                             "{:s} method needs a docstring".format(func[0]))
+            self.assertTrue(len(func[1].__doc__) >= 1,
+                            "{:s} method needs a docstring".format(func[0]))
+
+
+class TestCity(unittest.TestCase):
+    """Test the City class"""
+    def test_is_subclass(self):
+        """Test that City is a subclass of BaseModel"""
         city = City()
-        city.save()
-        Ckey = "City." + city.id
-        objs = models.storage.all()
-        with open("file.json", "r") as file:
-            self.assertIn(Ckey, file.read())
-            self.assertIn(Ckey, objs)
+        self.assertIsInstance(city, BaseModel)
+        self.assertTrue(hasattr(city, "id"))
+        self.assertTrue(hasattr(city, "created_at"))
+        self.assertTrue(hasattr(city, "updated_at"))
 
-    def test_save_and_pass_argument(self):
-        """ test_save_and_pass_argument """
+    def test_name_attr(self):
+        """Test that City has attribute name, and it's an empty string"""
         city = City()
-        with self.assertRaises(TypeError):
-            city.save(None)
+        self.assertTrue(hasattr(city, "name"))
+        if models.storage_t == 'db':
+            self.assertEqual(city.name, None)
+        else:
+            self.assertEqual(city.name, "")
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_save_on_two_calls(self):
-        """ test save for two different calls """
+    def test_state_id_attr(self):
+        """Test that City has attribute state_id, and it's an empty string"""
         city = City()
-        sleep(0.1)
-        updated_at_1 = city.updated_at
-        city.save()
-        updated_at_2 = city.updated_at
-        self.assertLess(updated_at_1, updated_at_2)
-        sleep(0.1)
-        city.save()
-        self.assertLess(updated_at_2, city.updated_at)
+        self.assertTrue(hasattr(city, "state_id"))
+        if models.storage_t == 'db':
+            self.assertEqual(city.state_id, None)
+        else:
+            self.assertEqual(city.state_id, "")
 
+    def test_to_dict_creates_dict(self):
+        """test to_dict method creates a dictionary with proper attrs"""
+        c = City()
+        new_d = c.to_dict()
+        self.assertEqual(type(new_d), dict)
+        self.assertFalse("_sa_instance_state" in new_d)
+        for attr in c.__dict__:
+            if attr is not "_sa_instance_state":
+                self.assertTrue(attr in new_d)
+        self.assertTrue("__class__" in new_d)
 
-class TestCity_to_dict(unittest.TestCase):
-    """class to test to_dict method for Amenity class """
-    @classmethod
-    def setUp(self):
-        """ setUp the enviroment for testing"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
+    def test_to_dict_values(self):
+        """test that values in dict returned from to_dict are correct"""
+        t_format = "%Y-%m-%dT%H:%M:%S.%f"
+        c = City()
+        new_d = c.to_dict()
+        self.assertEqual(new_d["__class__"], "City")
+        self.assertEqual(type(new_d["created_at"]), str)
+        self.assertEqual(type(new_d["updated_at"]), str)
+        self.assertEqual(new_d["created_at"], c.created_at.strftime(t_format))
+        self.assertEqual(new_d["updated_at"], c.updated_at.strftime(t_format))
 
-    @classmethod
-    def tearDown(self):
-        """ teardown the enviroment to end the testing"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    def test_to_dict_keys_if_same(self):
-        """  test_to_dict_keys_if_same """
+    def test_str(self):
+        """test that the str method has the correct output"""
         city = City()
-        self.assertNotEqual(city.__dict__, city.to_dict())
-
-    def test_to_dict_type(self):
-        """ test_to_dict_type """
-        city = City()
-        self.assertTrue(dict, type(city.to_dict()))
-
-    def test_if_to_dict_kv_is_same_with__dict__(self):
-        """ check if  test passes the  missing __class__ in __dict__"""
-        city = City()
-        self.assertNotEqual(city.to_dict(), city.__dict__)
-
-    def test_if_2_dict_kv_are_equal(self):
-        """ test_if_2_dict_kv_are_equal """
-        date_now = datetime.today()
-        city = City()
-        city.id = "909000"
-        city.stateid = "8267"
-        city.name = "Lagos"
-        city.created_at = date_now
-        city.updated_at = date_now
-        dict_amenity = {
-            '__class__': 'City',
-            'id': '909000',
-            'name': 'Lagos',
-            'created_at': date_now.isoformat(),
-            'updated_at': date_now.isoformat(),
-            'stateid': '8267'
-        }
-        self.assertDictEqual(dict_amenity, city.to_dict())
-
-    def test_dict_attributes_if_equal(self):
-        """test_dict_attributes_if_equal"""
-        city = City()
-        city.attr_name = "Pascal"
-        city.age = 67
-        self.assertEqual("Pascal", city.attr_name)
-        self.assertIn("attr_name", city.to_dict())
-
-
-class TestCity___str__(unittest.TestCase):
-    @classmethod
-    def setUp(self):
-        """ setup the enviroment for testing"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
-
-    @classmethod
-    def tearDown(self):
-        """ teardown the enviroment to end the testing"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-
-class TestCity__init__(unittest.TestCase):
-    """ test init method for Amenity"""
-    @classmethod
-    def setUp(self):
-        """ setup the enviroment for testing"""
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
-
-    @classmethod
-    def tearDown(self):
-        """ teardown the enviroment to end the testing"""
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
-
-    def test_city_with_none_parameters(self):
-        """ test_Amenity_with_none_parameters"""
-        city = City(None)
-        self.assertNotIn(None, city.__dict__.values())
-
-    def test_superclass_of_city(self):
-        """ test_superclass_of_city """
-        city = City()
-        self.assertTrue(issubclass(type(city), BaseModel))
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_name_is_public_class_attribute(self):
-        """ check if attr type is same as dict as well"""
-        city = City()
-        self.assertIn("name", dir(City()))
-        self.assertEqual(str, type(City.state_id))
-        self.assertEqual(str, type(City.name))
-        self.assertNotIn("state_id", city.__dict__)
-
-    def test_City_type(self):
-        """ test City type """
-        self.assertEqual(type(City()), City)
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_City_public_attributes_type(self):
-        """ test_public_public_attributes_type """
-        self.assertEqual(str, type(City.name))
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_id_if_typeis_str(self):
-        """ test_id_if_typeis_str"""
-        self.assertEqual(str, type(City().name))
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_created_at_if_typeis_datetime(self):
-        """ test_created_at_if_type_datetime """
-        self.assertEqual(datetime, type(City().created_at))
-
-    def test_updated_at_if_typeis_datetime(self):
-        """ test_updated_at_if_type_datetime """
-        self.assertEqual(datetime, type(City().updated_at))
-
-    def test_dir(self):
-        """ test dir and name attr"""
-        city = City()
-        city.name = "africa"
-        self.assertIn("name", dir(City()))
-        self.assertIn("name", city.__dict__)
-
-    def test_two_city_id_if_they_are_not_same(self):
-        """ test_two_city_id_if_they_are_not_same """
-        city = City()
-        city_1 = City()
-        self.assertNotEqual(city.id, city_1.id)
-
-    def test_City_type(self):
-        """ test City type"""
-        self.assertEqual(type(City()), City)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        string = "[City] ({}) {}".format(city.id, city.__dict__)
+        self.assertEqual(string, str(city))

@@ -1,110 +1,82 @@
 #!/usr/bin/python3
-""" base model super class to be used
-by allsub classes """
-
-from uuid import uuid4
+"""
+Contains class BaseModel
+"""
+import inspect
 from datetime import datetime
-from sqlalchemy import *
-from sqlalchemy.orm import *
-from os import getenv
-from sqlalchemy.ext.declarative import declarative_base
 import models
+from os import getenv
+import sqlalchemy
+from sqlalchemy import Column, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+import uuid
 
+time = "%Y-%m-%dT%H:%M:%S.%f"
 
-if getenv('HBNB_TYPE_STORAGE') == "db":
+if models.storage_t == "db":
     Base = declarative_base()
 else:
     Base = object
 
 
 class BaseModel:
-    """ Basmodel for other classes save __str__ new
-    All other classes will inherit from BaseModel to get common
-    values (id, created_at, updated_at), where inheriting from
-    ase will actually cause SQLAlchemy to attempt to map it to a table.
-    """
-    id = Column(String(60), primary_key=True, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    """The BaseModel class from which future classes will be derived"""
+    if models.storage_t == "db":
+        id = Column(String(60), primary_key=True)
+        created_at = Column(DateTime, default=datetime.utcnow)
+        updated_at = Column(DateTime, default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
-        """ initializes the class attributes*arg is an unused variable"""
-        str_fdate = "%Y-%m-%dT%H:%M:%S.%f"
-        self.id = str(uuid4())
-        self.created_at = self.updated_at = datetime.utcnow()
-        # self.created_at = datetime.today()
-        # self.updated_at = datetime.today()
-        if kwargs is not None and kwargs != {}:
-            for k, v in kwargs.items():
-                if k == '__class__':
-                    continue
-                setattr(self, k, v)
-                if k == "created_at":
-                    self.__dict__[k] = datetime.strptime(v, str_fdate)
-                elif k == "updated_at":
-                    self.__dict__[k] = datetime.strptime(v, str_fdate)
-                if k != "__class__":
-                    self.__dict__[k] = v
+        """Initialization of the base model"""
+        if kwargs:
+            for key, value in kwargs.items():
+                if key != "__class__":
+                    setattr(self, key, value)
+            if kwargs.get("created_at", None) and type(self.created_at) is str:
+                self.created_at = datetime.strptime(kwargs["created_at"], time)
+            else:
+                self.created_at = datetime.utcnow()
+            if kwargs.get("updated_at", None) and type(self.updated_at) is str:
+                self.updated_at = datetime.strptime(kwargs["updated_at"], time)
+            else:
+                self.updated_at = datetime.utcnow()
+            if kwargs.get("id", None) is None:
+                self.id = str(uuid.uuid4())
         else:
-            self.id = str(uuid4())
+            self.id = str(uuid.uuid4())
             self.created_at = datetime.utcnow()
-            self.updated_at = datetime.utcnow()
-            # models.storage.new(self)
+            self.updated_at = self.created_at
 
     def __str__(self):
-        """ string representation of the BaseModel intance """
-        clName = type(self).__name__
-        d = self.__dict__
-        str = "[{}] ({}) {}".format(clName, self.id, d)
-        return str
+        """String representation of the BaseModel class"""
+        return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.id,
+                                         self.__dict__)
 
     def save(self):
-        """ updates the instance attribute update_at """
+        """updates the attribute 'updated_at' with the current datetime"""
         self.updated_at = datetime.utcnow()
         models.storage.new(self)
         models.storage.save()
 
-    def to_dict_db(self):
-        """return all keys and values of the objectinstance from __dict__"""
-        dictcopy = self.__dict__.copy()
-        if type(self.created_at) is str:
-            pass
-            # dictcopy["created_at"] = self.created_at
-        else:
-            dictcopy["created_at"] = self.created_at.isoformat()
-        if type(self.updated_at) is str:
-            pass
-            # dictcopy["updated_at"] = self.updated_at
-        else:
-            dictcopy["updated_at"] = self.updated_at.isoformat()
-
-        if '_sa_instance_state' in dictcopy.keys():
-            del dictcopy['_sa_instance_state']
-        return dictcopy
-
-    def to_dict(self, save_fs=None):
-        """return all keys and values of the objectinstance from __dict__"""
-        dictcopy = self.__dict__.copy()
-        if type(self.created_at) is str:
-            pass
-            # dictcopy["created_at"] = self.created_at
-        else:
-            dictcopy["created_at"] = self.created_at.isoformat()
-        if type(self.updated_at) is str:
-            pass
-            # dictcopy["updated_at"] = self.updated_at
-        else:
-            dictcopy["updated_at"] = self.updated_at.isoformat()
-        dictcopy["__class__"] = self.__class__.__name__
-        if '_password' in dictcopy:
-            dictcopy['password'] = dictcopy['_password']
-            dictcopy.pop('_password', None)
-        if '_sa_instance_state' in dictcopy.keys():
-            del dictcopy['_sa_instance_state']
-        if save_fs is None:
-            if "password" in dictcopy:
-                del dictcopy["password"]
-        return dictcopy
+    def to_dict(self):
+        """returns a dictionary containing all keys/values of the instance"""
+        new_dict = self.__dict__.copy()
+        if "created_at" in new_dict:
+            new_dict["created_at"] = new_dict["created_at"].strftime(time)
+        if "updated_at" in new_dict:
+            new_dict["updated_at"] = new_dict["updated_at"].strftime(time)
+        new_dict["__class__"] = self.__class__.__name__
+        if "_sa_instance_state" in new_dict:
+            del new_dict["_sa_instance_state"]
+        frame = inspect.currentframe().f_back
+        func_name = frame.f_code.co_name
+        class_name = ''
+        if 'self' in frame.f_locals:
+            class_name = frame.f_locals["self"].__class__.__name__
+        is_fs_writing = func_name == 'save' and class_name == 'FileStorage'
+        if 'password' in new_dict and not is_fs_writing:
+            del new_dict['password']
+        return new_dict
 
     def delete(self):
         """delete the current instance from the storage"""

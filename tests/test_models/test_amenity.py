@@ -1,170 +1,105 @@
 #!/usr/bin/python3
-""" unittest for amenity class """
-from models.engine.file_storage import FileStorage
-from models.base_model import BaseModel
-from models.amenity import Amenity
+"""
+Contains the TestAmenityDocs classes
+"""
+
 from datetime import datetime
-import json
-import os
-from time import sleep
+import inspect
 import models
-from os import getenv
+from models import amenity
+from models.base_model import BaseModel
+import pep8
 import unittest
+Amenity = amenity.Amenity
 
 
-class TestAmenity_save(unittest.TestCase):
-    """ test save method  for Amenity class """
+class TestAmenityDocs(unittest.TestCase):
+    """Tests to check the documentation and style of Amenity class"""
     @classmethod
-    def setUp(self):
-        try:
-            os.rename("file.json", "pascal")
-        except IOError:
-            pass
+    def setUpClass(cls):
+        """Set up for the doc tests"""
+        cls.amenity_f = inspect.getmembers(Amenity, inspect.isfunction)
 
-    @classmethod
-    def tearDown(self):
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("pascal", "file.json")
-        except IOError:
-            pass
+    def test_pep8_conformance_amenity(self):
+        """Test that models/amenity.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['models/amenity.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_save_for_amenity_object(self):
-        """ test_save_for_amenity_object """
+    def test_pep8_conformance_test_amenity(self):
+        """Test that tests/test_models/test_amenity.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['tests/test_models/test_amenity.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
+
+    def test_amenity_module_docstring(self):
+        """Test for the amenity.py module docstring"""
+        self.assertIsNot(amenity.__doc__, None,
+                         "amenity.py needs a docstring")
+        self.assertTrue(len(amenity.__doc__) >= 1,
+                        "amenity.py needs a docstring")
+
+    def test_amenity_class_docstring(self):
+        """Test for the Amenity class docstring"""
+        self.assertIsNot(Amenity.__doc__, None,
+                         "Amenity class needs a docstring")
+        self.assertTrue(len(Amenity.__doc__) >= 1,
+                        "Amenity class needs a docstring")
+
+    def test_amenity_func_docstrings(self):
+        """Test for the presence of docstrings in Amenity methods"""
+        for func in self.amenity_f:
+            self.assertIsNot(func[1].__doc__, None,
+                             "{:s} method needs a docstring".format(func[0]))
+            self.assertTrue(len(func[1].__doc__) >= 1,
+                            "{:s} method needs a docstring".format(func[0]))
+
+
+class TestAmenity(unittest.TestCase):
+    """Test the Amenity class"""
+    def test_is_subclass(self):
+        """Test that Amenity is a subclass of BaseModel"""
         amenity = Amenity()
-        amenity.save()
-        objs = models.storage.all()
-        Amkey = "Amenity." + amenity.id
-        with open("file.json", "r") as file:
-            self.assertIn(Amkey, file.read())
-            self.assertIn(Amkey, objs)
+        self.assertIsInstance(amenity, BaseModel)
+        self.assertTrue(hasattr(amenity, "id"))
+        self.assertTrue(hasattr(amenity, "created_at"))
+        self.assertTrue(hasattr(amenity, "updated_at"))
 
-    def test_save_and_pass_argument(self):
-        """ test_save_and_pass_argument """
+    def test_name_attr(self):
+        """Test that Amenity has attribute name, and it's as an empty string"""
         amenity = Amenity()
-        with self.assertRaises(TypeError):
-            amenity.save(None)
+        self.assertTrue(hasattr(amenity, "name"))
+        if models.storage_t == 'db':
+            self.assertEqual(amenity.name, None)
+        else:
+            self.assertEqual(amenity.name, "")
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_save_on_two_calls(self):
-        """ test save for two different calls """
+    def test_to_dict_creates_dict(self):
+        """test to_dict method creates a dictionary with proper attrs"""
+        am = Amenity()
+        new_d = am.to_dict()
+        self.assertEqual(type(new_d), dict)
+        self.assertFalse("_sa_instance_state" in new_d)
+        for attr in am.__dict__:
+            if attr != "_sa_instance_state":
+                self.assertTrue(attr in new_d)
+        self.assertTrue("__class__" in new_d)
+
+    def test_to_dict_values(self):
+        """test that values in dict returned from to_dict are correct"""
+        t_format = "%Y-%m-%dT%H:%M:%S.%f"
+        am = Amenity()
+        new_d = am.to_dict()
+        self.assertEqual(new_d["__class__"], "Amenity")
+        self.assertEqual(type(new_d["created_at"]), str)
+        self.assertEqual(type(new_d["updated_at"]), str)
+        self.assertEqual(new_d["created_at"], am.created_at.strftime(t_format))
+        self.assertEqual(new_d["updated_at"], am.updated_at.strftime(t_format))
+
+    def test_str(self):
+        """test that the str method has the correct output"""
         amenity = Amenity()
-        sleep(0.1)
-        updated_at_1 = amenity.updated_at
-        amenity.save()
-        updated_at_2 = amenity.updated_at
-        self.assertLess(updated_at_1, updated_at_2)
-        sleep(0.1)
-        amenity.save()
-        self.assertLess(updated_at_2, amenity.updated_at)
-
-
-class TestAmenity_to_dict(unittest.TestCase):
-    """class to test to_dict method for Amenity class """
-    def test_to_dict_keys_if_same(self):
-        """  test_to_dict_keys_if_same """
-        amenity = Amenity()
-        self.assertIn("created_at", amenity.to_dict())
-
-    def test_to_dict_type(self):
-        """ test_to_dict_type """
-        amenity = Amenity()
-        self.assertTrue(dict, type(amenity.to_dict()))
-
-    def test_if_to_dict_kv_is_same_with__dict__(self):
-        """ check if  test passes the  missing __class__ in __dict__"""
-        amenity = Amenity()
-        self.assertNotEqual(amenity.to_dict(), amenity.__dict__)
-
-    def test_if_2_dict_kv_are_equal(self):
-        """ test_if_2_dict_kv_are_equal """
-        date_now = datetime.today()
-        amenity = Amenity()
-        amenity.id = "886600"
-        amenity.name = "Home appliances"
-        amenity.created_at = date_now
-        amenity.updated_at = date_now
-        dict_amenity = {
-            '__class__': 'Amenity',
-            'id': '886600',
-            'name': 'Home appliances',
-            'created_at': date_now.isoformat(),
-            'updated_at': date_now.isoformat(),
-        }
-        self.assertDictEqual(dict_amenity, amenity.to_dict())
-
-    def test_dict_attributes_if_equal(self):
-        """test_dict_attributes_if_equal"""
-        amenity = Amenity()
-        amenity.attr_name = "Pascal"
-        amenity.age = 67
-        self.assertEqual("Pascal", amenity.attr_name)
-        self.assertIn("attr_name", amenity.to_dict())
-
-
-class TestAmenity__init__(unittest.TestCase):
-    """ test init method for Amenity"""
-    def test_Amenity_with_none_parameters(self):
-        """ test_Amenity_with_none_parameters"""
-        amenity = Amenity(None)
-        self.assertNotIn(None, amenity.__dict__.values())
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_name_is_public_class_attribute(self):
-        """ check if attr type is same as dict as well"""
-        amenity = Amenity()
-        self.assertIn("name", dir(Amenity()))
-        self.assertEqual(str, type(Amenity.name))
-        self.assertNotIn("name", amenity.__dict__)
-
-    def test_Amenity_type(self):
-        """ test Amenity type """
-        self.assertEqual(type(Amenity()), Amenity)
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_Amenity_public_attributes_type(self):
-        """ test_public_public_attributes_type """
-        self.assertEqual(str, type(Amenity.name))
-
-    def test_id_if_typeis_str(self):
-        """ test_id_if_typeis_str"""
-        self.assertEqual(str, type(Amenity().id))
-
-    def test_created_at_if_typeis_datetime(self):
-        """ test_created_at_if_type_datetime """
-        self.assertEqual(datetime, type(Amenity().created_at))
-
-    def test_updated_at_if_typeis_datetime(self):
-        """ test_updated_at_if_type_datetime """
-        self.assertEqual(datetime, type(Amenity().updated_at))
-
-    def test_superclass_of_amenity(self):
-        """ test_superclass_of_user """
-        amenity = Amenity()
-        self.assertTrue(issubclass(type(amenity), BaseModel))
-
-    def test_dir(self):
-        """ test dir and name attr"""
-        amenity = Amenity()
-        amenity.name = "car"
-        self.assertIn("name", dir(Amenity()))
-        self.assertIn("name", amenity.__dict__)
-
-    def test_two_amenities_id_if_they_are_not_same(self):
-        """ test_two_amenities_id_if_they_are_not_same """
-        amd = Amenity()
-        amd_1 = Amenity()
-        self.assertNotEqual(amd.id, amd_1.id)
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'NO DB')
-    def test_storage_type(self):
-        """ test storage type"""
-        self.assertEqual(type(models.storage), FileStorage)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        string = "[Amenity] ({}) {}".format(amenity.id, amenity.__dict__)
+        self.assertEqual(string, str(amenity))

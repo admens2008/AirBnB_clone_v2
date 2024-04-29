@@ -1,4 +1,4 @@
-.filters{
+.filters {
     background-color: white;
     height: 70px;
     width: 100%;
@@ -8,17 +8,19 @@
     justify-content: flex-end;
     align-items: center;
 }
-.filters button {
+
+section.filters button{
     font-size: 18px;
+    color: white;
     background-color: #FF5A5F;
-    color: #FFFFFF;
     height: 48px;
-    width: 20%;
-    border: none;
+    border: 0px;
     border-radius: 4px;
+    width: 20%;
     margin-right: 30px;
+    opacity: 1;
 }
 
-.filters button:hover {
+section.filters button:hover {
     opacity: 0.9;
 }
